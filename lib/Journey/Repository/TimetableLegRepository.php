@@ -88,6 +88,10 @@ class TimetableLegRepository {
         $callingPoints = [];
         $prev = null;
 
+        if ($stmt->rowCount() === 0) {
+            return $result;
+        }
+
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
             if ($prev !== null && $prev["service"] !== $row["service"]) {
