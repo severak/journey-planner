@@ -75,6 +75,21 @@ class TimetableLeg extends Leg {
         return $this->operator;
     }
 
+    /**
+     * @param int $time
+     * @return bool
+     */
+    public function isAvailableAt(int $time): bool {
+        return $this->departureTime >= $time;
+    }
 
-
+    /**
+     * For a timetable leg the arrival time is always the arrival time.
+     *
+     * @param $departureTime
+     * @return int
+     */
+    public function getEarliestArrivalTime(int $departureTime): int {
+        return $this->arrivalTime;
+    }
 }

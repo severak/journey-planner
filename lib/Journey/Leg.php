@@ -44,4 +44,18 @@ abstract class Leg {
         return $this->mode;
     }
 
+    /**
+     * @param int $time
+     * @return bool
+     */
+    abstract function isAvailableAt(int $time): bool;
+
+    /**
+     * Return the earliest time this leg can arrive after the given departure time.
+     *
+     * @param $departureTime
+     * @return int
+     */
+    abstract public function getEarliestArrivalTime(int $departureTime): int;
+
 }

@@ -29,7 +29,7 @@ class Container extends PimpleContainer {
         parent::__construct($values);
 
         $this['name'] = 'PHP Journey Planner';
-        $this['version'] = '2.0';
+        $this['version'] = '2.1';
 
         $this['console'] = function($container) {
             return new Console($container);
@@ -46,7 +46,12 @@ class Container extends PimpleContainer {
         };
 
         $this['repository.transfer_pattern'] = function($container) {
-            return new TransferPatternRepository($container['db'], $container['cache'], $container['repository.timetable_leg']);
+            return new TransferPatternRepository(
+                $container['db'],
+                $container['repository.timetable_leg'],
+                $container['repository.fixed_leg'],
+                $container['repository.interchange']
+            );
         };
 
         $this['repository.timetable_leg'] = function($container) {
@@ -65,8 +70,6 @@ class Container extends PimpleContainer {
             return new GroupStationPlanner(
                 $container['repository.transfer_pattern'],
                 $container['repository.station'],
-                $container['repository.fixed_leg'],
-                $container['repository.interchange'],
                 [new SlowJourneyFilter()]
             );
         };
