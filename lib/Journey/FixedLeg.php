@@ -43,4 +43,14 @@ class FixedLeg extends Leg {
         return $this->startTime <= $time && $this->endTime >= $time;
     }
 
+    /**
+     * Add the duration of this leg to the departure time to work out the arrival time.
+     *
+     * @param int $departureTime
+     * @return int
+     */
+    public function getEarliestArrivalTime(int $departureTime): int {
+        return $departureTime + $this->duration;
+    }
+
 }

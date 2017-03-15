@@ -70,11 +70,11 @@ class FixedLegRepository {
                 $row["end_time"]
             );
 
-            if (isset($results[$row["origin"]])) {
-                $results[$row["origin"]][] = $leg;
+            if (isset($results[$row["origin"]][$row["destination"]])) {
+                $results[$row["origin"]][$row["destination"]][] = $leg;
             }
             else {
-                $results[$row["origin"]] = [$leg];
+                $results[$row["origin"]][$row["destination"]] = [$leg];
             }
         }
 
