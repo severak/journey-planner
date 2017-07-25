@@ -14,6 +14,16 @@ use PDO;
  */
 class TimetableLegRepository {
     const CACHE_KEY = "|TIMETABLE_LEG|";
+    const TYPES = [
+        0 => TimetableLeg::TRAM,
+        1 => TimetableLeg::TUBE,
+        2 => TimetableLeg::TRAIN,
+        3 => TimetableLeg::BUS,
+        4 => TimetableLeg::FERRY,
+        5 => TimetableLeg::CABLE ,
+        6 => TimetableLeg::REPLACEMENT_BUS,
+        7 => TimetableLeg::FUNICULAR
+    ];
 
     private $db;
     private $cache;
@@ -53,28 +63,27 @@ class TimetableLegRepository {
     public function getLegsFromDB(string $origin, string $destination, string $date, string $dow): array {
         $stmt = $this->db->prepare("            
             SELECT 
-                train_uid as service,
-                sstation.parent_station as station,
-                ostation.parent_station as origin, 
-                dstation.parent_station as destination, 
+                trip_headsign as service,
+                stop.stop_id as station,
                 TIME_TO_SEC(stop.departure_time) as departure_time, 
                 TIME_TO_SEC(stop.arrival_time) as arrival_time,
                 TIME_TO_SEC(dept.departure_time) as leg_departure_time, 
                 TIME_TO_SEC(arrv.arrival_time) as leg_arrival_time,
-                atoc_code AS operator,
-                IF (train_category='BS' OR train_category='BR', 'bus', 'train') AS type
+                agency_name AS operator,
+                route_type AS type
             FROM stop_times AS dept
-            JOIN stops AS ostation ON dept.stop_id = ostation.stop_id
             JOIN stop_times AS arrv ON arrv.trip_id = dept.trip_id AND arrv.stop_sequence > dept.stop_sequence
-            JOIN stops AS dstation ON arrv.stop_id = dstation.stop_id
             JOIN stop_times AS stop ON stop.trip_id = dept.trip_id AND stop.stop_sequence BETWEEN dept.stop_sequence AND arrv.stop_sequence
-            JOIN stops AS sstation ON stop.stop_id = sstation.stop_id
             JOIN trips ON dept.trip_id = trips.trip_id
+            JOIN routes USING (route_id)
+            JOIN agency USING (agency_id)
             JOIN calendar USING(service_id)
-            WHERE ostation.parent_station = :origin
-            AND dstation.parent_station = :destination
+            LEFT JOIN calendar_dates USING(service_id)
+            WHERE dept.stop_id = :origin
+            AND arrv.stop_id = :destination
             AND :startDate BETWEEN start_date AND end_date
             AND {$dow} = 1
+            AND calendar_dates.date != :startDate
             ORDER BY arrv.arrival_time, stop.trip_id, stop.stop_sequence            
         ");
 
@@ -93,12 +102,11 @@ class TimetableLegRepository {
         }
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-
             if ($prev !== null && $prev["service"] !== $row["service"]) {
                 $result[] = new TimetableLeg(
-                    $prev["origin"],
-                    $prev["destination"],
-                    $prev["type"],
+                    $origin,
+                    $destination,
+                    self::TYPES[$prev["type"]],
                     $prev["leg_departure_time"],
                     $prev["leg_arrival_time"],
                     $callingPoints,
@@ -115,8 +123,8 @@ class TimetableLegRepository {
 
         if ($prev !== null) {
             $result[] = new TimetableLeg(
-                $prev["origin"],
-                $prev["destination"],
+                $origin,
+                $destination,
                 $prev["type"],
                 $prev["leg_departure_time"],
                 $prev["leg_arrival_time"],

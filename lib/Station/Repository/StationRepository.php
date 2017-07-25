@@ -22,11 +22,11 @@ class StationRepository {
      * @return array
      */
     public function getLocations(): array {
-        $stmt = $this->db->query("SELECT stop_code, stop_name FROM stops WHERE stop_code != ''");
+        $stmt = $this->db->query("SELECT stop_id, stop_name FROM stops");
         $results = [];
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $results[$row['stop_code']] = $row['stop_name'];
+            $results[$row['stop_id']] = $row['stop_name'];
         }
 
         return $results;

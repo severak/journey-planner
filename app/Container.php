@@ -108,7 +108,7 @@ class Container extends PimpleContainer {
         $pass = $_SERVER["DATABASE_PASSWORD"] ?? "";
         $host = $_SERVER["DATABASE_HOSTNAME"] ?? "localhost";
 
-        $pdo = new PDO("mysql:host={$host};dbname=ojp", $user, $pass);
+        $pdo = new PDO("mysql:host={$host};dbname=gtfs", $user, $pass);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         return $pdo;
