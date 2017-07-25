@@ -6,7 +6,17 @@ namespace JourneyPlanner\Lib\Journey;
  * @author Linus Norton <linusnorton@gmail.com>
  */
 abstract class Leg {
-    const TRAIN = "train", BUS = "bus", REPLACEMENT_BUS = "replacement bus", WALK = "walk", TUBE = "tube";
+    const TRAIN = "train",
+          BUS = "bus",
+          REPLACEMENT_BUS = "replacement bus",
+          WALK = "walk",
+          TUBE = "tube",
+          TRAM = "tram",
+          FUNICULAR = "funicular",
+          FERRY = "ferry",
+          CABLE = "cable car",
+          METRO = "metro",
+          TRANSFER = "transfer";
 
     protected $origin;
     protected $destination;

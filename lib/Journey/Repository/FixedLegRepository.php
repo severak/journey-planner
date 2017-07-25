@@ -47,7 +47,7 @@ class FixedLegRepository {
             SELECT 
                 from_stop_id as origin, 
                 to_stop_id as destination, 
-                link_secs as duration, 
+                duration, 
                 mode, 
                 TIME_TO_SEC(start_time) as start_time,
                 TIME_TO_SEC(end_time) as end_time
