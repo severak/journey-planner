@@ -78,12 +78,11 @@ class TimetableLegRepository {
             JOIN routes USING (route_id)
             JOIN agency USING (agency_id)
             JOIN calendar USING(service_id)
-            LEFT JOIN calendar_dates USING(service_id)
             WHERE dept.stop_id = :origin
             AND arrv.stop_id = :destination
             AND :startDate BETWEEN start_date AND end_date
             AND {$dow} = 1
-            AND calendar_dates.date != :startDate
+            AND NOT EXISTS (SELECT * FROM calendar_dates WHERE date = :startDate AND calendar_dates.service_id = trips.service_id)
             ORDER BY arrv.arrival_time, stop.trip_id, stop.stop_sequence            
         ");
 
